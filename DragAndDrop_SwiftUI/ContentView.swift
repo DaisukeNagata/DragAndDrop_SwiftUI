@@ -106,7 +106,7 @@ class GridImageData: ObservableObject, DropDelegate {
     
     func performDrop(info: DropInfo) -> Bool {
         for provider in info.itemProviders(for: [String(UTType.url.identifier)]) {
-            guard provider.canLoadObject(ofClass: URL.self) else { return false}
+            guard provider.canLoadObject(ofClass: URL.self) else { return false }
             print("url loaded")
             let _ = provider.loadObject(ofClass: URL.self) { (url, err) in
                 DispatchQueue.main.async {
