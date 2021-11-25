@@ -77,11 +77,13 @@ struct GridDragAndDropDesgin: View {
                                 print(image.image)
                             }
                             .onTapGesture {
-                                withAnimation(.easeOut) {
-                                    self.delegate.selectedImages.removeAll {
-                                        (check) -> Bool in
-                                        if check.id == image.id{return true}
-                                        else {return false}
+                                withAnimation(.easeInOut) {
+                                    DispatchQueue.main.async {
+                                        self.delegate.selectedImages.removeAll {
+                                            (check) -> Bool in
+                                            if check.id == image.id{return true}
+                                            else {return false}
+                                        }
                                     }
                                 }
                             }
