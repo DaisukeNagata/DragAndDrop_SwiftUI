@@ -61,6 +61,7 @@ struct GridDragAndDropView: View {
 @available(iOS 15.0, *)
 struct GridDragAndDropDesgin: View {
     
+    @State var count = 0
     @ObservedObject var delegate: GridImageData
     var columns: [GridItem] = Array(repeating: .init(.fixed(0)), count: 1)
     
@@ -87,19 +88,23 @@ struct GridDragAndDropDesgin: View {
                         }
                 }
             }
+            
+        }
+        .onChange(of: delegate.selectedImages.count) { value in
+            count = value
         }
         .offset(x: (UIScreen.main.bounds.width/7)/4)
-        .onDrop(of: [String(UTType.url.identifier)], delegate: delegate)
+        .onDrop(of: [String(UTType.url.identifier)], delegate: count == 0 ? delegate : GridImageData())
     }
 }
 
 @available(iOS 15.0, *)
 class GridImageData: ObservableObject, DropDelegate {
     @Published var totalImages: [GridImg] = [
-        GridImg(id: 0, image: "p1"),
-        GridImg(id: 1, image: "p2"),
-        GridImg(id: 2, image: "p3"),
-        GridImg(id: 3, image: "p4")
+        GridImg(id: 0, image: "p1", flg: false),
+        GridImg(id: 1, image: "p2", flg: false),
+        GridImg(id: 2, image: "p3", flg: false),
+        GridImg(id: 3, image: "p4", flg: false)
     ]
     @Published var selectedImages: [GridImg] = []
     
@@ -109,7 +114,9 @@ class GridImageData: ObservableObject, DropDelegate {
             print("url loaded")
             let _ = provider.loadObject(ofClass: URL.self) { (url, err) in
                 DispatchQueue.main.async { [self] in
-                    selectedImages.append(GridImg(id: self.selectedImages.count,image: "\(url!)"))
+                    selectedImages.append(GridImg(id: self.selectedImages.count,
+                                                  image: "\(url!)",
+                                                  flg: selectedImages.last?.flg ?? false))
                 }
             }
         }
@@ -121,6 +128,7 @@ class GridImageData: ObservableObject, DropDelegate {
 struct GridImg: Identifiable {
     var id: Int
     var image: String
+    var flg: Bool
 }
 
 @available(iOS 15.0, *)
