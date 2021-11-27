@@ -101,10 +101,10 @@ struct GridDragAndDropDesgin: View {
 @available(iOS 15.0, *)
 class GridImageData: ObservableObject, DropDelegate {
     @Published var totalImages: [GridImg] = [
-        GridImg(id: 0, image: "p1", flg: false),
-        GridImg(id: 1, image: "p2", flg: false),
-        GridImg(id: 2, image: "p3", flg: false),
-        GridImg(id: 3, image: "p4", flg: false)
+        GridImg(id: 0, image: "p1"),
+        GridImg(id: 1, image: "p2"),
+        GridImg(id: 2, image: "p3"),
+        GridImg(id: 3, image: "p4")
     ]
     @Published var selectedImages: [GridImg] = []
     
@@ -114,9 +114,7 @@ class GridImageData: ObservableObject, DropDelegate {
             print("url loaded")
             let _ = provider.loadObject(ofClass: URL.self) { (url, err) in
                 DispatchQueue.main.async { [self] in
-                    selectedImages.append(GridImg(id: self.selectedImages.count,
-                                                  image: "\(url!)",
-                                                  flg: selectedImages.last?.flg ?? false))
+                    selectedImages.append(GridImg(id: self.selectedImages.count,　image: "\(url!)"))
                 }
             }
         }
@@ -128,7 +126,6 @@ class GridImageData: ObservableObject, DropDelegate {
 struct GridImg: Identifiable {
     var id: Int
     var image: String
-    var flg: Bool
 }
 
 @available(iOS 15.0, *)
