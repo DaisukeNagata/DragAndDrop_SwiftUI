@@ -114,7 +114,7 @@ class GridImageData: ObservableObject, DropDelegate {
             print("url loaded")
             let _ = provider.loadObject(ofClass: URL.self) { (url, err) in
                 DispatchQueue.main.async { [self] in
-                    selectedImages.append(GridImg(id: self.selectedImages.count,　image: "\(url!)"))
+                    selectedImages.append(GridImg(id: self.selectedImages.count, image: "\(url!)"))
                 }
             }
         }
