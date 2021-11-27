@@ -25,9 +25,9 @@ struct GridDragAndDropView: View {
     var body: some View {
         VStack(spacing: 5) {
             Color.clear.frame(height: UIScreen.main.bounds.height/9)
-            ForEach((0...5), id: \.self) { row in
+            ForEach((0..<5), id: \.self) { row in
                 HStack {
-                    ForEach((1...5), id: \.self) { column in
+                    ForEach((0..<5), id: \.self) { column in
                         GridDragAndDropDesgin(delegate: GridImageData())
                             .frame(width: UIScreen.main.bounds.width/7,
                                    height: UIScreen.main.bounds.width/7)
@@ -41,7 +41,8 @@ struct GridDragAndDropView: View {
                     Text((image.id + 1).description)
                     Image(image.image)
                         .resizable()
-                        .frame(width: UIScreen.main.bounds.width/8, height: UIScreen.main.bounds.width/8)
+                        .frame(width: UIScreen.main.bounds.width/8,
+                               height: UIScreen.main.bounds.width/8)
                         .cornerRadius(15)
                         .onDrag {
                             NSItemProvider(item: .some(URL(string: image.image)! as NSSecureCoding),
@@ -67,27 +68,23 @@ struct GridDragAndDropDesgin: View {
         ScrollView(.horizontal, showsIndicators: false) {
             LazyHGrid(rows: columns) {
                 ForEach(delegate.selectedImages) { image in
-                    ZStack(alignment: Alignment(horizontal: .center,
-                                                vertical: .top)) {
-                        Image(image.image)
-                            .resizable()
-                            .frame(width: UIScreen.main.bounds.width/15,
-                                   height: UIScreen.main.bounds.width/15)
-                            .cornerRadius(5).onAppear {
-                                print(image.image)
-                            }
-                            .onTapGesture {
-                                withAnimation(.easeInOut) {
-                                    DispatchQueue.main.async {
-                                        self.delegate.selectedImages.removeAll {
-                                            (check) -> Bool in
-                                            if check.id == image.id{return true}
-                                            else {return false}
-                                        }
+                    Image(image.image)
+                        .resizable()
+                        .frame(width: UIScreen.main.bounds.width/15,
+                               height: UIScreen.main.bounds.width/15)
+                        .cornerRadius(5).onAppear {
+                            print(image.image)
+                        }
+                        .onTapGesture {
+                            withAnimation(.easeInOut) {
+                                DispatchQueue.main.async { [self] in
+                                    delegate.selectedImages.removeAll { (check) -> Bool in
+                                        if check.id == image.id{return true}
+                                        else {return false}
                                     }
                                 }
                             }
-                    }
+                        }
                 }
             }
         }
@@ -111,9 +108,8 @@ class GridImageData: ObservableObject, DropDelegate {
             guard provider.canLoadObject(ofClass: URL.self) else { return false }
             print("url loaded")
             let _ = provider.loadObject(ofClass: URL.self) { (url, err) in
-                DispatchQueue.main.async {
-                    self.selectedImages.append(GridImg(id: self.selectedImages.count,
-                                                       image: "\(url!)"))
+                DispatchQueue.main.async { [self] in
+                    selectedImages.append(GridImg(id: self.selectedImages.count,image: "\(url!)"))
                 }
             }
         }
